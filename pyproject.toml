@@ -1,0 +1,27 @@
+[tool.poetry]
+name = "hexlet-code"
+version = "0.1.0"
+description = ""
+authors = ["Дмитрий Каблучко <xequrt@yandex.ru>"]
+repository = "https://github.com/Xequrt/python-project-83"
+readme = "README.md"
+packages = [
+  { include = "page_analyzer" },
+]
+
+[tool.poetry.dependencies]
+python = "^3.11"
+flask = "^3.1.0"
+gunicorn = "^23.0.0"
+python-dotenv = "^1.0.1"
+
+
+[tool.poetry.group.dev.dependencies]
+flake8 = "^7.1.1"
+
+[tool.poetry.scripts]
+page_analyzer = "page_analyzer.app:main"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
