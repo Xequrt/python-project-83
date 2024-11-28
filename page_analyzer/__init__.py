@@ -1,10 +1,2 @@
-import os
-from flask import Flask
-from dotenv import load_dotenv
-load_dotenv()
-app = Flask(__name__)
-app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')
+from .app import app
 __all__ = ['app']
-@app.route('/')
-def hello():
-    return "Hello, World!"
