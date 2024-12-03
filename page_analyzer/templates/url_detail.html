@@ -1,9 +1,11 @@
 {% extends "base.html" %}
+
+{% block title %}Детали URL{% endblock %}
+
 {% block content %}
-    <div class="container">
-        <h1 class="mt-5">Детали URL</h1>
-        <h2>URL: {{ url }}</h2>
-        <p>ID URL: {{ url_id }}</p>
-        <a href="/" class="btn btn-primary">На главную</a>
-    </div>
+<h2>Детали URL</h2>
+<p><strong>ID:</strong> {{ url[0] }}</p>
+<p><strong>URL:</strong> {{ url[1] }}</p>
+<p><strong>Дата создания:</strong> {{ url[2] }}</p>
+<a href="{{ url_for('urls') }}" class="btn btn-secondary">Назад к списку</a>
 {% endblock %}

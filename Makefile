@@ -5,7 +5,7 @@ dev:
 	poetry run flask --app page_analyzer:app run
 
 build:
-	poetry build
+	./build.sh
 
 publish:
 	poetry publish --dry-run
