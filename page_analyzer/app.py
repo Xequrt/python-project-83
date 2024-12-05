@@ -75,7 +75,12 @@ def url_detail(url_id):
     conn.close()
     if url_entry is None:
         return "URL not found", 404
-    return render_template('url_detail.html', url=url_entry)
+    url_data = {
+        'id': url_entry[0],
+        'name': url_entry[1],
+        'created_at': url_entry[2]
+    }
+    return render_template('url_detail.html', url=url_data)
 
 if __name__ == '__main__':
     app.run(debug=True)
