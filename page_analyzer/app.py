@@ -37,19 +37,24 @@ def analyze():
     cursor = conn.cursor()
 
     cursor.execute('SELECT * FROM urls WHERE name = %s', (normalized_url,))
-    if cursor.fetchone():
-        flash('Этот URL уже добавлен.', 'error')
+    existing_url = cursor.fetchone()
+    if existing_url:
+        flash('Страница уже существует', 'info')
+        url_id = existing_url[0]
+    else:
+        created_at = datetime.now()
+        cursor.execute('INSERT INTO urls (name, created_at) VALUES (%s, %s) RETURNING id', (normalized_url, created_at))
+        url_id = cursor.fetchone()[0]
+        conn.commit()
+        flash('URL успешно добавлен!', 'success')
+        cursor.execute("INSERT INTO url_checks (url_id, created_at) VALUES (%s, CURRENT_TIMESTAMP)", (url_id,))
+        conn.commit()
+
         cursor.close()
         conn.close()
-        return redirect(url_for('index'))
 
-    created_at = datetime.now()
-    cursor.execute('INSERT INTO urls (name, created_at) VALUES (%s, %s)', (normalized_url, created_at))
-    conn.commit()
-    cursor.close()
-    conn.close()
-    flash('URL успешно добавлен!', 'success')
-    return redirect(url_for('urls'))
+        # Перенаправляем на страницу деталей URL
+    return redirect(url_for('url_detail', url_id=url_id))
 
 
 @app.route('/urls')
@@ -59,7 +64,7 @@ def urls():
     cursor.execute('SELECT * FROM urls ORDER BY created_at DESC')
     all_urls = cursor.fetchall()
 
-    urls_list = [{'id': url[0], 'name': url[1], 'created_at': url[2]} for url in all_urls]
+    urls_list = [{'id': url[0], 'name': url[1], 'created_at': url[2].strftime('%Y-%m-%d')} for url in all_urls]
 
     cursor.close()
     conn.close()
@@ -71,16 +76,36 @@ def url_detail(url_id):
     cursor = conn.cursor()
     cursor.execute('SELECT * FROM urls WHERE id = %s', (url_id,))
     url_entry = cursor.fetchone()
-    cursor.close()
-    conn.close()
     if url_entry is None:
         return "URL not found", 404
+
+    cursor.execute('SELECT * FROM url_checks WHERE url_id = %s', (url_id,))
+    checks = cursor.fetchall()
+
+    cursor.close()
+    conn.close()
+
     url_data = {
         'id': url_entry[0],
         'name': url_entry[1],
-        'created_at': url_entry[2]
+        'created_at': url_entry[2].strftime('%Y-%m-%d')
     }
-    return render_template('url_detail.html', url=url_data)
+
+    checks_list = [{'id': check[0], 'url_id': check[1], 'created_at': check[6].strftime('%Y-%m-%d')} for check in checks]
+
+    return render_template('url_detail.html', url=url_data, checks=checks_list)
+
+@app.route('/urls/<int:url_id>/checks', methods=['POST'])
+def run_checks(url_id):
+    conn = get_db_connection()
+    cursor = conn.cursor()
+
+    cursor.execute("INSERT INTO url_checks (url_id, created_at) VALUES (%s, CURRENT_TIMESTAMP)", (url_id,))
+
+    conn.commit()
+    cursor.close()
+    conn.close()
+    return redirect(url_for('url_detail', url_id=url_id))
 
 if __name__ == '__main__':
     app.run(debug=True)

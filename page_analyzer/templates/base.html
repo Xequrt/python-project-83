@@ -6,6 +6,13 @@
     <meta name="description" content="Анализатор страниц">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
     <title>{% block title %}Анализатор страниц{% endblock %}</title>
+    <style>
+    .alert {
+        width: 100%;
+        margin: 0;
+        padding: 1rem;
+    }
+    </style>
 </head>
 <body class="min-vh-100 d-flex flex-column">
     <header class="flex-shrink-0">
@@ -27,7 +34,7 @@
                 {% if messages %}
                     <div class="mb-3">
                         {% for category, message in messages %}
-                            <div class="alert alert-{{ category }}" role="alert">{{ message }}</div>
+                            <div class="alert alert-{{ category }} w-100" role="alert">{{ message }}</div>
                         {% endfor %}
                     </div>
                 {% endif %}
