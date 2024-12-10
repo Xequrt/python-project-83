@@ -91,7 +91,7 @@ def url_detail(url_id):
         'created_at': url_entry[2].strftime('%Y-%m-%d')
     }
 
-    checks_list = [{'id': check[0], 'url_id': check[1], 'created_at': check[6].strftime('%Y-%m-%d')} for check in checks]
+    checks_list = [{'id': check[0], 'url_id': check[1], 'status_code': check[2], 'created_at': check[6].strftime('%Y-%m-%d')} for check in checks]
 
     return render_template('url_detail.html', url=url_data, checks=checks_list)
 
