@@ -54,7 +54,6 @@ def analyze():
         cursor.close()
         conn.close()
 
-        # Перенаправляем на страницу деталей URL
     return redirect(url_for('url_detail', url_id=url_id))
 
 
@@ -68,11 +67,12 @@ def urls():
     LEFT JOIN url_checks uc ON u.id = uc.url_id
     WHERE uc.id = (
     SELECT MAX(id) FROM url_checks WHERE url_id = u.id)
+    OR uc.id IS NULL
     ORDER BY u.created_at DESC
     ''')
     all_urls = cursor.fetchall()
 
-    urls_list = [{'id': url[0], 'name': url[1], 'created_at': url[2].strftime('%Y-%m-%d'), 'status_code': url[3]} for url in all_urls]
+    urls_list = [{'id': url[0], 'name': url[1], 'created_at': url[2].strftime('%Y-%m-%d'), 'status_code': url[3] if url[3] is not None else ''} for url in all_urls]
 
     cursor.close()
     conn.close()
