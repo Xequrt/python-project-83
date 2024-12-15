@@ -1,3 +1,4 @@
+import requests
 from flask import Flask, render_template, request, redirect, url_for, flash
 import os
 import psycopg2
@@ -46,9 +47,9 @@ def analyze():
         cursor.execute('INSERT INTO urls (name, created_at) VALUES (%s, %s) RETURNING id', (normalized_url, created_at))
         url_id = cursor.fetchone()[0]
         conn.commit()
-        flash('URL успешно добавлен!', 'success')
-        cursor.execute("INSERT INTO url_checks (url_id, created_at) VALUES (%s, CURRENT_TIMESTAMP)", (url_id,))
-        conn.commit()
+        flash('Страница успешно добавлена!', 'success')
+        # cursor.execute("INSERT INTO url_checks (url_id, created_at) VALUES (%s, CURRENT_TIMESTAMP)", (url_id,))
+        # conn.commit()
 
         cursor.close()
         conn.close()
@@ -61,10 +62,17 @@ def analyze():
 def urls():
     conn = get_db_connection()
     cursor = conn.cursor()
-    cursor.execute('SELECT * FROM urls ORDER BY created_at DESC')
+    cursor.execute('''
+    SELECT u.id, u.name, u.created_at, uc.status_code
+    FROM urls u
+    LEFT JOIN url_checks uc ON u.id = uc.url_id
+    WHERE uc.id = (
+    SELECT MAX(id) FROM url_checks WHERE url_id = u.id)
+    ORDER BY u.created_at DESC
+    ''')
     all_urls = cursor.fetchall()
 
-    urls_list = [{'id': url[0], 'name': url[1], 'created_at': url[2].strftime('%Y-%m-%d')} for url in all_urls]
+    urls_list = [{'id': url[0], 'name': url[1], 'created_at': url[2].strftime('%Y-%m-%d'), 'status_code': url[3]} for url in all_urls]
 
     cursor.close()
     conn.close()
@@ -100,9 +108,30 @@ def run_checks(url_id):
     conn = get_db_connection()
     cursor = conn.cursor()
 
-    cursor.execute("INSERT INTO url_checks (url_id, created_at) VALUES (%s, CURRENT_TIMESTAMP)", (url_id,))
+    cursor.execute('SELECT * FROM urls WHERE id = %s', (url_id,))
+    url_entry = cursor.fetchone()
 
-    conn.commit()
+    if url_entry is None:
+        return "URL not found", 404
+
+    url_data = {
+        'id': url_entry[0],
+        'name': url_entry[1],
+        'created_at': url_entry[2].strftime('%Y-%m-%d')
+    }
+
+    try:
+        response = requests.get(url_data['name'])
+        response.raise_for_status()
+        status_code = response.status_code
+
+        cursor.execute("INSERT INTO url_checks (url_id, status_code, created_at) VALUES (%s, %s, CURRENT_TIMESTAMP)", (url_id, status_code))
+
+        conn.commit()
+
+        flash('Проверка выполнена успешно!', 'success')
+    except requests.exceptions.RequestException:
+        flash('Произошла ошибка при проверке', 'danger')
     cursor.close()
     conn.close()
     return redirect(url_for('url_detail', url_id=url_id))
