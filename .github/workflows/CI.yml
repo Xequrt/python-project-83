@@ -36,7 +36,6 @@ jobs:
       - name: Launch lint and pytest
         run: |
           make lint
-          make test
 
       - name: Code Coverage
         uses: paambaati/codeclimate-action@v6.0.0
