@@ -25,7 +25,7 @@ def parse(url):
     }
     h1_view = soup.find('h1')
     title_view = soup.find('title')
-    description_view = soup.find('meta', {'name':'description'})
+    description_view = soup.find('meta', {'name': 'description'})
     if h1_view is not None:
         result_dict['h1'] = h1_view.get_text()
     if title_view is not None:
@@ -33,7 +33,6 @@ def parse(url):
     if description_view is not None:
         result_dict['description'] = description_view.get('content')
     return result_dict
-
 
 
 def get_db_connection():
@@ -54,7 +53,7 @@ def analyze():
     normalized_url = parsed_url.geturl()
 
     if not validators.url(normalized_url) or len(normalized_url) > 255:
-        flash('Некорректный URL. Пожалуйста, введите действительный URL-адрес, не превышающий 255 символов.', 'danger')
+        flash('Некорректный URL', 'danger')
         return redirect(url_for('index'))
 
     conn = get_db_connection()
@@ -67,12 +66,12 @@ def analyze():
         url_id = existing_url[0]
     else:
         created_at = datetime.now()
-        cursor.execute('INSERT INTO urls (name, created_at) VALUES (%s, %s) RETURNING id', (normalized_url, created_at))
+        cursor.execute('''
+        INSERT INTO urls (name, created_at)
+        VALUES (%s, %s) RETURNING id''', (normalized_url, created_at))
         url_id = cursor.fetchone()[0]
         conn.commit()
         flash('Страница успешно добавлена!', 'success')
-        # cursor.execute("INSERT INTO url_checks (url_id, created_at) VALUES (%s, CURRENT_TIMESTAMP)", (url_id,))
-        # conn.commit()
 
         cursor.close()
         conn.close()
@@ -95,11 +94,15 @@ def urls():
     ''')
     all_urls = cursor.fetchall()
 
-    urls_list = [{'id': url[0], 'name': url[1], 'created_at': url[2].strftime('%Y-%m-%d'), 'status_code': url[3] if url[3] is not None else ''} for url in all_urls]
+    urls_list = [{'id': url[0], 'name': url[1],
+                  'created_at': url[2].strftime('%Y-%m-%d'),
+                  'status_code': url[3] if url[3] is not None else ''}
+                 for url in all_urls]
 
     cursor.close()
     conn.close()
     return render_template('urls.html', urls=urls_list)
+
 
 @app.route('/urls/<int:url_id>')
 def url_detail(url_id):
@@ -122,9 +125,21 @@ def url_detail(url_id):
         'created_at': url_entry[2].strftime('%Y-%m-%d')
     }
 
-    checks_list = [{'id': check[0], 'url_id': check[1], 'status_code': check[2], 'h1':check[3], 'title': check[4], 'description': check[5], 'created_at': check[6].strftime('%Y-%m-%d')} for check in checks]
+    checks_list = [
+        {
+            'id': check[0],
+            'url_id': check[1],
+            'status_code': check[2],
+            'h1': check[3],
+            'title': check[4],
+            'description': check[5],
+            'created_at': check[6].strftime('%Y-%m-%d')
+        }
+        for check in checks
+    ]
 
     return render_template('url_detail.html', url=url_data, checks=checks_list)
+
 
 @app.route('/urls/<int:url_id>/checks', methods=['POST'])
 def run_checks(url_id):
@@ -137,7 +152,6 @@ def run_checks(url_id):
     parse_h1 = parse(url_entry[1])['h1']
     parse_title = parse(url_entry[1])['title']
     parse_description = parse(url_entry[1])['description']
-    print(f'h1:{parse_h1}, tit:{parse_title}, des: {parse_description}')
 
     if url_entry is None:
         return "URL not found", 404
@@ -153,7 +167,11 @@ def run_checks(url_id):
         response.raise_for_status()
         status_code = response.status_code
 
-        cursor.execute("INSERT INTO url_checks (url_id, status_code, h1, title, description, created_at) VALUES (%s, %s, %s, %s, %s, CURRENT_TIMESTAMP)", (url_id, status_code, parse_h1, parse_title, parse_description))
+        cursor.execute('''
+        INSERT INTO url_checks
+        (url_id, status_code, h1, title, description, created_at)
+         VALUES (%s, %s, %s, %s, %s, CURRENT_TIMESTAMP)
+         ''', (url_id, status_code, parse_h1, parse_title, parse_description))
 
         conn.commit()
 
@@ -163,6 +181,7 @@ def run_checks(url_id):
     cursor.close()
     conn.close()
     return redirect(url_for('url_detail', url_id=url_id))
+
 
 if __name__ == '__main__':
     app.run(debug=True)
