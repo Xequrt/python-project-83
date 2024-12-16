@@ -32,7 +32,6 @@
     <thead>
       <tr>
         <th>ID</th>
-        <th>url_id</th>
         <th>Код ответа</th>
         <th>h1</th>
         <th>title</th>
@@ -44,15 +43,10 @@
     {% for check in checks %}
     <tr>
         <td>{{ check.id }}</td>
-        <td>{{ check.url_id }}</td>
         <td>{{ check.status_code }}</td>
-        <td>pass</td>
-        <td>pass</td>
-        <td>pass</td>
-<!--        <td>{{ check.status_code }}</td>-->
-<!--        <td>{{ check.h1 }}</td>-->
-<!--        <td>{{ check.title }}</td>-->
-<!--        <td>{{ check.description }}</td>-->
+        <td>{{ check.h1 }}</td>
+        <td>{{ check.title }}</td>
+        <td>{{ check.description }}</td>
         <td>{{ check.created_at }}</td>
     </tr>
     {% endfor %}
