@@ -19,6 +19,8 @@ psycopg2 = "^2.9.10"
 validators = "^0.18"
 flask-sqlalchemy = "^3.1.1"
 requests = "^2.32.3"
+beautifulsoup4 = "^4.12.3"
+lxml = "^5.3.0"
 
 
 [tool.poetry.group.dev.dependencies]
