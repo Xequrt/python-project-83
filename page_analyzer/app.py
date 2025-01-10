@@ -1,9 +1,9 @@
 from flask import Flask, render_template, request, redirect, url_for, flash
 from urllib.parse import urlparse
-from db_operations import (get_url_by_name, insert_url,
+from page_analyzer.db_operations import (get_url_by_name, insert_url,
                            get_url_name_by_id, get_all_urls, get_url_checks)
-from validators_url import is_valid_url, is_len_valid
-from checks import run_check
+from page_analyzer.validators_url import is_valid_url, is_len_valid
+from page_analyzer.checks import run_check
 import os
 from dotenv import load_dotenv
 

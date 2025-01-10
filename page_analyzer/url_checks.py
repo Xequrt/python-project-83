@@ -1,5 +1,5 @@
 import requests
-from parser import parse
+from page_analyzer.parser import parse
 
 
 def check_url_availability(url):

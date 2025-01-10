@@ -1,5 +1,5 @@
-from db_connection import db
-from url_checks import run_all_checks
+from page_analyzer.db_connection import db
+from page_analyzer.url_checks import run_all_checks
 from datetime import datetime
 
 
