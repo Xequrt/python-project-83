@@ -34,5 +34,4 @@ def parse(url):
         result_dict['title'] = title_view.get_text()
     if description_view:
         result_dict['description'] = description_view.get('content')
-    print(result_dict)
     return result_dict

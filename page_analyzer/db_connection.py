@@ -8,7 +8,7 @@ DATABASE_URL = os.getenv('DATABASE_URL')
 
 class Database:
     def __init__(self):
-        self.connection_pool = pool.SimpleConnectionPool(1, 20, DATABASE_URL)
+        self.connection_pool = pool.SimpleConnectionPool(1, 100, DATABASE_URL)
 
     def get_connection(self):
         return self.connection_pool.getconn()
