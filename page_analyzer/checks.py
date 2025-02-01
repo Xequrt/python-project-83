@@ -1,4 +1,4 @@
-from page_analyzer.db_connection import db
+from page_analyzer.db_operations import db
 from page_analyzer.url_checks import run_all_checks
 from datetime import datetime
 

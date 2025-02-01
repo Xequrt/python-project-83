@@ -1,5 +1,7 @@
 from datetime import datetime
-from page_analyzer.db_connection import db
+from page_analyzer.db_connection import Database
+
+db = Database()
 
 
 def get_url_by_name(url_name):

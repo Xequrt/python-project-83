@@ -27,8 +27,12 @@ def retry(retries=5, interval=1):
 
 
 class Database:
-    def init(self):
-        self.connection_pool = pool.SimpleConnectionPool(1, 10, DATABASE_URL)
+    def __init__(self):
+        self.connection_pool = pool.SimpleConnectionPool(
+            minconn=1,
+            maxconn=10,
+            dsn=DATABASE_URL,
+        )
 
     @retry(retries=5, interval=1)
     def get_connection(self):
@@ -36,6 +40,3 @@ class Database:
 
     def release_connection(self, conn):
         self.connection_pool.putconn(conn)
-
-
-db = Database()
