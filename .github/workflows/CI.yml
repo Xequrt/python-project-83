@@ -25,13 +25,14 @@ jobs:
         with: 
           python-version: '3.11'
         
-      - name: Poetry install
+      - name: uv install
         run: |
-         pip install poetry
-         make install
+          curl -LsSf https://astral.sh/uv/install.sh | sh
+          source $HOME/.local/bin/env
+          make install
          
       - name: Install lint
-        run: poetry add --group dev flake8
+        run: uv add --dev flake8
 
       - name: Launch lint
         run: |
