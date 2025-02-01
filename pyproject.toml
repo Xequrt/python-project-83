@@ -1,5 +1,5 @@
 [project]
-name = "python-project-83"
+name = "hexlet-code"
 version = "0.1.0"
 description = "The project is designed to check the accessibility of web-pages and to obtain brief information about the page."
 readme = "README.md"
