@@ -37,7 +37,7 @@ def analyze():
 
     else:
         url_id = insert_url(normalized_url)
-        flash('Страница успешно добавлена!', 'success')
+        flash('Страница успешно добавлена', 'success')
 
     return redirect(url_for('url_detail', url_id=url_id))
 
@@ -89,7 +89,7 @@ def run_checks(url_id):
     url_name = url_entry[1]
 
     if run_check(url_id, url_name):
-        flash('Проверка выполнена успешно!', 'success')
+        flash('Страница успешно проверена', 'success')
     else:
         flash('Произошла ошибка при проверке', 'danger')
 
