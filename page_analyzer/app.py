@@ -27,7 +27,7 @@ def analyze():
 
     if not is_valid_url(normalized_url) or not is_len_valid(normalized_url):
         flash('Некорректный URL', 'danger')
-        return redirect(url_for('index'))
+        return render_template('index.html', title='Анализатор страниц', url=url)
 
     existing_url = get_url_by_name(normalized_url)
 
