@@ -1,5 +1,5 @@
 from flask import Flask, render_template, request, redirect, url_for, flash
-from urllib.parse import urlparse
+from urllib.parse import urlparse, urlunparse
 from page_analyzer.db_operations import (get_url_by_name, insert_url,
                                          get_url_name_by_id, get_all_urls,
                                          get_url_checks)
@@ -23,7 +23,7 @@ def index():
 def analyze():
     url = request.form['url']
     parsed_url = urlparse(url)
-    normalized_url = parsed_url.geturl()
+    normalized_url = urlunparse((parsed_url.scheme, parsed_url.netloc, '', '', '', ''))
 
     if not is_valid_url(normalized_url) or not is_len_valid(normalized_url):
         flash('Некорректный URL', 'danger')
