@@ -19,31 +19,29 @@ def index():
     return render_template('index.html', title='Анализатор страниц')
 
 
-@app.route('/analyze', methods=['POST'])
-def analyze():
-    url = request.form['url']
-    parsed_url = urlparse(url)
-    normalized_url = urlunparse((parsed_url.scheme, parsed_url.netloc, '', '', '', ''))
-
-    if not is_valid_url(normalized_url) or not is_len_valid(normalized_url):
-        flash('Некорректный URL', 'danger')
-        return render_template('index.html', title='Анализатор страниц', url=url)
-
-    existing_url = get_url_by_name(normalized_url)
-
-    if existing_url:
-        flash('Страница уже существует', 'info')
-        url_id = existing_url[0]
-
-    else:
-        url_id = insert_url(normalized_url)
-        flash('Страница успешно добавлена', 'success')
-
-    return redirect(url_for('url_detail', url_id=url_id))
-
-
-@app.route('/urls')
+@app.route('/urls', methods=['POST', 'GET'])
 def urls():
+    if request.method == 'POST':
+        url = request.form['url']
+        parsed_url = urlparse(url)
+        normalized_url = urlunparse((parsed_url.scheme,
+                                     parsed_url.netloc, '', '', '', ''))
+
+        if not is_valid_url(normalized_url) or not is_len_valid(normalized_url):
+            flash('Некорректный URL', 'danger')
+            return render_template('index.html', title='Анализатор страниц', url=url)
+
+        existing_url = get_url_by_name(normalized_url)
+
+        if existing_url:
+            flash('Страница уже существует', 'info')
+            url_id = existing_url[0]
+
+        else:
+            url_id = insert_url(normalized_url)
+            flash('Страница успешно добавлена', 'success')
+
+        return redirect(url_for('url_detail', url_id=url_id))
     urls_list = get_all_urls()
     return render_template('urls.html', urls=urls_list)
 
