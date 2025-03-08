@@ -32,7 +32,7 @@ def insert_url(url_name):
 def get_url_name_by_id(url_id):
     conn = db.get_connection()
     cursor = conn.cursor()
-    cursor.execute('SELECT id, name, created_at FROM urls WHERE id = %s', (url_id,)) # noqa: E501
+    cursor.execute('SELECT id, name, created_at FROM urls WHERE id = %s', (url_id,))  # noqa: E501
     result = cursor.fetchone()
     cursor.close()
     db.release_connection(conn)
