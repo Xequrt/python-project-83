@@ -29,7 +29,7 @@ def urls():
 
         if not is_valid_url(normalized_url) or not is_len_valid(normalized_url):
             flash('Некорректный URL', 'danger')
-            return render_template('index.html', title='Анализатор страниц', url=url), 422
+            return render_template('index.html', title='Анализатор страниц', url=url), 422 # noqa: E501
 
         existing_url = get_url_by_name(normalized_url)
 
